@@ -82,6 +82,7 @@ public class FollowingEnemy : MonoBehaviour
 
                 if (CanSeePlayer()) 
                 {
+                    agent.stoppingDistance = originalStoppingDistance;
                     currentState = EnemyState.Chasing;
                 }
                 else if (!agent.pathPending && agent.remainingDistance <= agent.stoppingDistance)
