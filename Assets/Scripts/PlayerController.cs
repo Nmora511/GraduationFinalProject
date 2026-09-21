@@ -4,6 +4,7 @@ using UnityEngine.InputSystem;
 // TODO: Attack and Animations (All code is commented)
 public class Player : MonoBehaviour
 {
+    public float healthPoints;
     public float moveSpeed;
     public float rotationSpeed;
 
