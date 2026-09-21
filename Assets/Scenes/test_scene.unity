@@ -1073,6 +1073,9 @@ MonoBehaviour:
   healthPoints: 0
   moveSpeed: 0
   rotationSpeed: 0
+  dashSpeed: 15
+  dashDuration: 0.2
+  dashCooldown: 1
 --- !u!114 &1536612662
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1088,6 +1091,9 @@ MonoBehaviour:
   healthPoints: 0
   moveSpeed: 5
   rotationSpeed: 10
+  dashSpeed: 10
+  dashDuration: 0.2
+  dashCooldown: 1
 --- !u!114 &1536612663
 MonoBehaviour:
   m_ObjectHideFlags: 0

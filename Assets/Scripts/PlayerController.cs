@@ -4,9 +4,17 @@ using UnityEngine.InputSystem;
 // TODO: Attack and Animations (All code is commented)
 public class Player : MonoBehaviour
 {
+    [Header("Player Stats")]
     public float healthPoints;
-    public float moveSpeed;
-    public float rotationSpeed;
+
+    [Header("Movement Settings")]
+    public float moveSpeed = 5f;
+    public float rotationSpeed = 15f;
+
+    [Header("Dash Settings")]
+    public float dashSpeed = 15f;
+    public float dashDuration = 0.2f;
+    public float dashCooldown = 1f;
 
     private CharacterController controller;
     //private Animator animator;
@@ -15,6 +23,10 @@ public class Player : MonoBehaviour
     private Vector2 moveInput;
 
     private Vector3 FinalVelocity;
+
+    private bool isDashing = false;
+    private float dashTimer;
+    private float dashCooldownTimer;
 
     //private bool isAttacking = false;
     //private float attackCooldown = 0.53f;
@@ -42,8 +54,39 @@ public class Player : MonoBehaviour
         moveInput = value.Get<Vector2>();
     }
 
+    public void OnDash(InputValue value)
+    {
+        if (value.isPressed && !isDashing && dashCooldownTimer <= 0f)
+        {
+            isDashing = true;
+            dashTimer = dashDuration;
+            dashCooldownTimer = dashCooldown;
+        }
+    }
+
     void UpdateHorizontalVelocity()
     {
+        // Dash Handler
+        if (dashCooldownTimer > 0f)
+        {
+            dashCooldownTimer -= Time.deltaTime;
+        }
+
+        if (isDashing)
+        {
+            dashTimer -= Time.deltaTime;
+            if (dashTimer <= 0f)
+            {
+                isDashing = false;
+            }
+            else
+            {
+                FinalVelocity = transform.forward * dashSpeed;
+                return;
+            }
+        }
+
+        // Walking Handler
         // Fixes movimentation based on camera angle
         Vector3 camForward = Camera.main.transform.forward;
         Vector3 camRight = Camera.main.transform.right;
