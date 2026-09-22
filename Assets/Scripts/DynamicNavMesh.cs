@@ -3,21 +3,21 @@ using Unity.AI.Navigation;
 
 public class DynamicNavMesh : MonoBehaviour
 {
-    private NavMeshSurface navMeshSurface;
+    private NavMeshSurface _navMeshSurface;
 
-    void Awake()
+    private void Awake()
     {
-        navMeshSurface = GetComponent<NavMeshSurface>();
+        _navMeshSurface = GetComponent<NavMeshSurface>();
     }
 
-    void Start()
+    private void Start()
     {
         ConstructPaths();
     }
 
-    public void ConstructPaths()
+    private void ConstructPaths()
     {
-        navMeshSurface.BuildNavMesh();
+        _navMeshSurface.BuildNavMesh();
         Debug.Log("NavMesh generated successfully for current scenario.");
     }
 }
