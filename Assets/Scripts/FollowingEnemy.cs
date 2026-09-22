@@ -6,6 +6,8 @@ using UnityEngine.AI;
 public class FollowingEnemy : MonoBehaviour
 {
     private static readonly int IsChasing = Animator.StringToHash("IsChasing");
+    private static readonly int HasAttacked = Animator.StringToHash("hasAttacked");
+
 
     // The Finite State Machine (FSM)
     public enum EnemyState { Idle, Chasing, Investigating, Attacking }
@@ -15,23 +17,29 @@ public class FollowingEnemy : MonoBehaviour
 
     [Header("Target Reference")]
     public Transform Target;
-
+    
     [Header("Vision & Senses Settings")]
     public float ViewRadius = 20f; 
     [Range(0, 360)]
     public float ViewAngle = 150f; 
-    public float ProximityRadius = 2f; 
+    public float ProximityRadius = 3f; 
     public LayerMask ObstacleLayer;
 
     [Header("Advanced AI Feel")]
     public Vector3 EyeOffset = new Vector3(0, 1f, 0);
     public float InvestigationOvershoot = 1.5f;
+    
+    [Header("Combat Settings")]
+    public float AttackCooldown = 2.7f;
+    public float AttackDamage = 5f;
+    private float _attackTimer; 
 
     private NavMeshAgent _navMeshAgent;
     private float _originalStoppingDistance;
 
     private Vector3 _lastKnownPosition;
     private Vector3 _previousPlayerPosition;
+    private float _distanceToPlayer;
 
     private Animator _animator;
 
@@ -47,42 +55,64 @@ public class FollowingEnemy : MonoBehaviour
     {
         if (Target is null) return;
 
+        _distanceToPlayer = (Target.position - transform.position).magnitude;
+        
+        if (_attackTimer > 0f)
+        {
+            _attackTimer -= Time.deltaTime;
+        }
+        
         switch (CurrentState)
         {
             case EnemyState.Idle:
                 _navMeshAgent.isStopped = true;
                 
+                
                 if (CanSeePlayer())
                 {
                     _navMeshAgent.stoppingDistance = _originalStoppingDistance;
                     CurrentState = EnemyState.Chasing;
+                } 
+                else if (_distanceToPlayer <= ProximityRadius * 1.5)
+                {
+                    RotateTowards(Target.position);
+                }
+                else {
+                    RotateTowards(_lastKnownPosition);
                 }
                 break;
 
             case EnemyState.Chasing:
                 _navMeshAgent.isStopped = false;
                 _navMeshAgent.SetDestination(Target.position);
-
+                
                 CalculateLastKnownPosition();
                 _previousPlayerPosition = Target.position;
 
                 _animator.SetBool(IsChasing, true);
+                
+                var directionToPlayer = (Target.position - transform.position).normalized;
+                var angleToPlayer = Vector3.Angle(transform.forward, directionToPlayer);
                 
                 if (LostLineOfSight())
                 {
                     _navMeshAgent.stoppingDistance = 0f;
                     CurrentState = EnemyState.Investigating;
                 }
-                else if (_navMeshAgent.remainingDistance <= _navMeshAgent.stoppingDistance)
+                else if (_distanceToPlayer <= ProximityRadius && _attackTimer <= 0f && angleToPlayer <= 45f)
                 {
-                    FaceTarget();
-                }
+                    CurrentState = EnemyState.Attacking;
+                    _attackTimer = AttackCooldown;
+                    _animator.SetBool(IsChasing, false);
+                    _animator.SetTrigger(HasAttacked);
+                } 
+                
                 break;
 
             case EnemyState.Investigating:
                 _navMeshAgent.isStopped = false;
                 _navMeshAgent.SetDestination(_lastKnownPosition);
-
+                
                 if (CanSeePlayer()) 
                 {
                     _navMeshAgent.stoppingDistance = _originalStoppingDistance;
@@ -90,13 +120,24 @@ public class FollowingEnemy : MonoBehaviour
                 }
                 else if (!_navMeshAgent.pathPending && _navMeshAgent.remainingDistance <= _navMeshAgent.stoppingDistance)
                 {
-                    FaceTarget();
-                    CurrentState = EnemyState.Idle;
+                    _lastKnownPosition = _navMeshAgent.steeringTarget;
+                    CurrentState = EnemyState.Idle; 
                     _animator.SetBool(IsChasing, false);
                 }
                 break;
+            
             case EnemyState.Attacking:
+                if (_attackTimer > 0f)
+                {
+                    _navMeshAgent.isStopped = true;
+                    CalculateLastKnownPosition();
+                }
+                else
+                {
+                    CurrentState = EnemyState.Idle;
+                }
                 break;
+            
             default:
                 throw new ArgumentOutOfRangeException();
         }
@@ -125,13 +166,15 @@ public class FollowingEnemy : MonoBehaviour
 
         return distanceToPlayer > ViewRadius * 1.5f || Physics.Raycast(transform.position, directionToPlayer.normalized, distanceToPlayer, ObstacleLayer);
     }
-
-    private void FaceTarget()
+    
+    private void RotateTowards(Vector3 targetPosition)
     {
-        var turnTowardNavSteeringTarget = _navMeshAgent.steeringTarget;
+        var direction = targetPosition - transform.position;
+        direction.y = 0f; 
 
-        var direction = (turnTowardNavSteeringTarget - transform.position).normalized;
-        var lookRotation = Quaternion.LookRotation(new Vector3(direction.x, 0f, direction.z));
+        // Using 0.001f instead of checking for Vector3.zero prevents micro-jitters 
+        if (direction.sqrMagnitude < 0.001f) return;
+        var lookRotation = Quaternion.LookRotation(direction.normalized);
         transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 5f);
 
     }

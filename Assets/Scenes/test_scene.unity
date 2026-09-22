@@ -1163,14 +1163,6 @@ PrefabInstance:
       propertyPath: Target
       value: 
       objectReference: {fileID: 1536612659}
-    - target: {fileID: 4379065524207697563, guid: 1c1b3cba5a995c64caed2f9e2531eb44, type: 3}
-      propertyPath: target
-      value: 
-      objectReference: {fileID: 1536612659}
-    - target: {fileID: 4379065524207697563, guid: 1c1b3cba5a995c64caed2f9e2531eb44, type: 3}
-      propertyPath: ObstacleLayer.m_Bits
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 4949662729556058622, guid: 1c1b3cba5a995c64caed2f9e2531eb44, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
