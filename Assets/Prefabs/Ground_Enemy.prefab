@@ -183,16 +183,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 274638ff7c56bc24cb16d8a731af8c33, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FollowingEnemy
-  currentState: 0
-  target: {fileID: 0}
-  viewRadius: 20
-  viewAngle: 200
-  proximityRadius: 2
-  obstacleLayer:
+  CurrentState: 0
+  Target: {fileID: 0}
+  ViewRadius: 20
+  ViewAngle: 150
+  ProximityRadius: 2
+  ObstacleLayer:
     serializedVersion: 2
     m_Bits: 1
-  eyeOffset: {x: 0, y: 1, z: 0}
-  investigationOvershoot: 1.5
+  EyeOffset: {x: 0, y: 1, z: 0}
+  InvestigationOvershoot: 1.5
 --- !u!1001 &4426190112619224573
 PrefabInstance:
   m_ObjectHideFlags: 0
