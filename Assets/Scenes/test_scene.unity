@@ -232,23 +232,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &290041697 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 708664017657933201, guid: 1c1b3cba5a995c64caed2f9e2531eb44, type: 3}
-  m_PrefabInstance: {fileID: 9151627227643919682}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &290041700
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 290041697}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bdf3322fde662954aa4b42e0841c62b3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Enemies.AttackHitbox
 --- !u!1 &330585543
 GameObject:
   m_ObjectHideFlags: 0
@@ -337,7 +320,7 @@ Transform:
   m_GameObject: {fileID: 330585543}
   serializedVersion: 2
   m_LocalRotation: {x: 0.23911765, y: 0.3696438, z: -0.09904577, w: 0.89239913}
-  m_LocalPosition: {x: -9.063111, y: 9.400001, z: -9.063111}
+  m_LocalPosition: {x: -24.862318, y: 22.300003, z: -24.862318}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -904,7 +887,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 886251e9a18ece04ea8e61686c173e1b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachinePositionComposer
-  CameraDistance: 14.8
+  CameraDistance: 40.6
   DeadZoneDepth: 0
   Composition:
     ScreenPosition: {x: 0, y: 0}
@@ -975,7 +958,7 @@ Transform:
   m_GameObject: {fileID: 1023711537}
   serializedVersion: 2
   m_LocalRotation: {x: 0.23911765, y: 0.3696438, z: -0.09904577, w: 0.89239913}
-  m_LocalPosition: {x: -9.063111, y: 9.400001, z: -9.063111}
+  m_LocalPosition: {x: -24.862318, y: 22.300003, z: -24.862318}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1087,7 +1070,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5c239cd702bbb9f40a36e7aeb7f114a9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
-  PlayerRenderer: {fileID: 0}
   HealthPoints: 10
   MoveSpeed: 5
   RotationSpeed: 15
@@ -1106,7 +1088,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5c239cd702bbb9f40a36e7aeb7f114a9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Player
-  PlayerRenderer: {fileID: 812279345}
   HealthPoints: 10
   MoveSpeed: 5
   RotationSpeed: 15
@@ -1225,10 +1206,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 708664017657933201, guid: 1c1b3cba5a995c64caed2f9e2531eb44, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 290041700}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1c1b3cba5a995c64caed2f9e2531eb44, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
