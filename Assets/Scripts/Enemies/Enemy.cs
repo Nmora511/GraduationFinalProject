@@ -4,8 +4,10 @@ using UnityEngine.AI;
 namespace Enemies
 {
     [RequireComponent(typeof(NavMeshAgent))]
-    public class Enemy : MonoBehaviour
+    public abstract class Enemy : Entity
     {
+        private static readonly int HasDied = Animator.StringToHash("hasDied");
+
         [Header("Target Reference")]
         public Transform Target;
     
@@ -19,17 +21,29 @@ namespace Enemies
         [Header("Advanced AI Feel")]
         public Vector3 EyeOffset = new Vector3(0, 1f, 0);
         public float InvestigationOvershoot = 1.5f;
-    
-        [Header("Combat Settings")]
-        public float HealthPoints = 20f;
 
         protected NavMeshAgent navMeshAgent;
         protected Animator animator;
 
-        protected virtual void Start()
+        private Collider _enemyCollider;
+        private Rigidbody _enemyRigidbody;
+        
+        protected new virtual void Start()
         {
+            base.Start();
             navMeshAgent = GetComponent<NavMeshAgent>();
             animator = GetComponentInChildren<Animator>();
+            _enemyCollider = GetComponent<Collider>();
+            _enemyRigidbody = GetComponent<Rigidbody>();
+        }
+
+        protected override void Death()
+        {
+            animator.SetTrigger(HasDied);
+            enabled = false;
+            navMeshAgent.enabled = false;
+            _enemyRigidbody.useGravity = false;
+            _enemyCollider.enabled = false;
         }
         
     }
