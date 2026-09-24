@@ -151,7 +151,7 @@ ModelImporter:
       name: Damage
       takeName: Damage
       internalID: 7049247351394602150
-      firstFrame: 0
+      firstFrame: 10
       lastFrame: 88
       wrapMode: 0
       orientationOffsetY: 0
