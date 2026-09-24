@@ -196,7 +196,7 @@ MonoBehaviour:
   CurrentState: 0
   AttackCooldown: 2.7
   AttackDamage: 5
-  DamageCollider: {fileID: 7193762250707130306}
+  DamageHitbox: {fileID: 7127924320275799996}
 --- !u!1001 &4426190112619224573
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -653,6 +653,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bdf3322fde662954aa4b42e0841c62b3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Enemies.AttackHitbox
+  Damage: 0
 --- !u!1 &3579681815789494444 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 2232b258c44dde64cbfda91eebb70286, type: 3}
