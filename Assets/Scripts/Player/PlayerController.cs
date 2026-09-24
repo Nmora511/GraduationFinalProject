@@ -5,11 +5,17 @@ using UnityEngine.InputSystem;
 // TODO: Attack and Animations (All code is commented)
 namespace Player
 {
-    public class Player : MonoBehaviour
+    public class Player : Entity
     {
-        [Header("Player Stats")]
-        public float HealthPoints = 50;
+        private static readonly int Speed = Animator.StringToHash("speed");
+        private static readonly int HasAttacked = Animator.StringToHash("hasAttacked");
 
+        [Header("Combat Settings")] 
+        public float AttackDamage;
+        public ScytheHitbox ScytheHitbox;
+        public float AttackDuration = 0.7f;
+        public float AttackSlideFriction = 4f;
+        
         [Header("Movement Settings")]
         public float MoveSpeed = 5f;
         public float RotationSpeed = 15f;
@@ -25,7 +31,6 @@ namespace Player
         //private Animator animator;
 
         private Renderer _playerRenderer;
-
         
         private Vector3 _inputDirection;
         private Vector2 _moveInput;
@@ -35,16 +40,23 @@ namespace Player
         private bool _isDashing;
         private float _dashTimer;
         private float _dashCooldownTimer;
+        
+        private Animator _animator;
 
-        //private bool isAttacking = false;
-        //private float attackCooldown = 0.53f;
+        private bool _isAttacking = false;
+        private float _attackCooldown = 1.2f;
+        private Collider _scytheCollider;
 
-        private void Start()
+        private new void Start()
         {
+            base.Start();
             _controller = GetComponent<CharacterController>();
             _mainCamera = Camera.main;
-            _playerRenderer = GetComponentInChildren<Renderer>();
-            //animator = GetComponent<Animator>();
+            _animator = GetComponentInChildren<Animator>();
+            
+            ScytheHitbox.Damage = AttackDamage;
+            _scytheCollider = ScytheHitbox.GetComponent<Collider>();
+            _scytheCollider.enabled = false;
 
             //PlayerInput playerInput = GetComponent<PlayerInput>();
             //sprintAction = playerInput.actions["Sprint"];
@@ -53,7 +65,7 @@ namespace Player
         private void Update()
         {
             UpdateHorizontalVelocity();
-            //UpdateAttackStatus();
+            UpdateAttackStatus();
 
             _controller.Move(_finalVelocity * Time.deltaTime);
         }
@@ -62,6 +74,7 @@ namespace Player
         public void OnMove(InputValue value)
         {
             _moveInput = value.Get<Vector2>();
+            _animator.SetFloat(Speed, _moveInput.magnitude);
         }
 
         public void OnDash(InputValue value)
@@ -94,6 +107,13 @@ namespace Player
                     _finalVelocity = transform.forward * DashSpeed;
                     return;
                 }
+            }
+            
+            if (_isAttacking)
+            {
+                // Reduz a velocidade gradualmente (Lerp) de AttackSlideSpeed até 0
+                _finalVelocity = Vector3.Lerp(_finalVelocity, Vector3.zero, Time.deltaTime * AttackSlideFriction);
+                return; // Encerra a função para ignorar os inputs do analógico/teclado
             }
 
             // Walking Handler
@@ -128,46 +148,27 @@ namespace Player
         }
 
         // Combat Handlers
-        public void OnHit()
-        {
-            StartCoroutine(HitFlash());
-            Debug.Log("Hit");
-        }
-
-        private IEnumerator HitFlash()
-        {
-            var originalColor = _playerRenderer.material.color;
-            _playerRenderer.material.color = Color.red;
-            yield return new WaitForSeconds(0.1f);
-            _playerRenderer.material.color = Color.white;
-            yield return new WaitForSeconds(0.1f);
-            _playerRenderer.material.color = Color.red;
-            yield return new WaitForSeconds(0.1f);
-            _playerRenderer.material.color = originalColor;
-
-        }
         
-        //public void OnAttack(InputValue inputValue)
-        //{
-        //    if (!isAttacking)
-        //    {
-        //        animator.SetTrigger("BasicAttack");
-        //        isAttacking = true;
-        //        basicSlash.Play();
-        //    }
-        //}
+        public void OnAttack(InputValue inputValue)
+        {
+            if (_isAttacking) return;
+            
+            _scytheCollider.enabled = true;
+            _animator.SetTrigger(HasAttacked);
+            _isAttacking = true;
+        }
 
-        //void UpdateAttackStatus()
-        //{
-        //    if (isAttacking)
-        //    {
-        //        attackCooldown -= Time.deltaTime;
-        //        if (attackCooldown <= 0f)
-        //        {
-        //            isAttacking = false;
-        //            attackCooldown = 0.53f;
-        //        }
-        //    }
-        //}
+        private void UpdateAttackStatus()
+        {
+            if (!_isAttacking) return;
+            
+            _attackCooldown -= Time.deltaTime;
+            
+            if (_attackCooldown > 0f) return;
+            
+            _scytheCollider.enabled = false;
+            _isAttacking = false;
+            _attackCooldown = AttackDuration;
+        }
     }
 }
