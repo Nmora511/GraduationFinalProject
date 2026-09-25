@@ -102,6 +102,7 @@ GameObject:
   - component: {fileID: 3147356861881224953}
   - component: {fileID: 3065333393581551679}
   - component: {fileID: 4379065524207697563}
+  - component: {fileID: 873160265917530473}
   m_Layer: 6
   m_Name: Ground_Enemy
   m_TagString: Enemy
@@ -167,8 +168,8 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.4
-  m_Height: 2.7
+  m_Radius: 0.8
+  m_Height: 3
   m_Direction: 1
   m_Center: {x: 0, y: 0.39, z: 0}
 --- !u!114 &4379065524207697563
@@ -183,6 +184,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 274638ff7c56bc24cb16d8a731af8c33, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FollowingEnemy
+  HealthPoints: 50
   Target: {fileID: 0}
   ViewRadius: 15
   ViewAngle: 150
@@ -192,11 +194,38 @@ MonoBehaviour:
     m_Bits: 1
   EyeOffset: {x: 0, y: 1, z: 0}
   InvestigationOvershoot: 1.5
-  HealthPoints: 20
   CurrentState: 0
   AttackCooldown: 2.7
-  AttackDamage: 5
+  AttackDamage: 20
   DamageHitbox: {fileID: 7127924320275799996}
+  HitAnimationDuration: 1.5
+--- !u!54 &873160265917530473
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4251343949696175326}
+  serializedVersion: 5
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 0, y: 0, z: 0}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 126
+  m_CollisionDetection: 0
 --- !u!1001 &4426190112619224573
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -654,6 +683,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Enemies.AttackHitbox
   Damage: 0
+  InvulnerabilityDuration: 0.2
 --- !u!1 &3579681815789494444 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 2232b258c44dde64cbfda91eebb70286, type: 3}
