@@ -13,7 +13,7 @@ namespace Player
         [Header("Combat Settings")] 
         public float AttackDamage;
         public ScytheHitbox ScytheHitbox;
-        public float AttackDuration = 0.7f;
+        public float AttackDuration = 0.67f;
         public float AttackSlideFriction = 4f;
         
         [Header("Movement Settings")]
@@ -24,6 +24,10 @@ namespace Player
         public float DashSpeed = 15f;
         public float DashDuration = 0.2f;
         public float DashCooldown = 1f;
+        
+        [Header("Gravity Settings")]
+        public float Gravity = -15f;
+        private Vector3 _verticalVelocity;
 
         private Camera _mainCamera;
     
@@ -59,10 +63,12 @@ namespace Player
             //sprintAction = playerInput.actions["Sprint"];
         }
 
-        private void Update()
+        protected override void Update()
         {
+            base.Update();
             UpdateHorizontalVelocity();
             UpdateAttackStatus();
+            ApplyGravity();
 
             _controller.Move(_finalVelocity * Time.deltaTime);
         }
@@ -82,6 +88,17 @@ namespace Player
                 _dashTimer = DashDuration;
                 _dashCooldownTimer = DashCooldown;
             }
+        }
+        
+        private void ApplyGravity()
+        {
+            if (_controller.isGrounded && _verticalVelocity.y < 0)
+            {
+                _verticalVelocity.y = -2f; 
+            }
+
+            _verticalVelocity.y += Gravity * Time.deltaTime;
+            _finalVelocity += _verticalVelocity;
         }
 
         private void UpdateHorizontalVelocity()
@@ -108,9 +125,8 @@ namespace Player
             
             if (_isAttacking)
             {
-                // Reduz a velocidade gradualmente (Lerp) de AttackSlideSpeed até 0
                 _finalVelocity = Vector3.Lerp(_finalVelocity, Vector3.zero, Time.deltaTime * AttackSlideFriction);
-                return; // Encerra a função para ignorar os inputs do analógico/teclado
+                return;
             }
 
             // Walking Handler
@@ -135,10 +151,6 @@ namespace Player
 
                 currentSpeed = MoveSpeed;
             }
-            //else if (inputDirection == Vector3.zero)
-            //{
-            //    animator.SetBool("isSprinting", false);
-            //}
 
             _finalVelocity = _inputDirection * currentSpeed;
             //animator.SetFloat("Speed", currentSpeed);
