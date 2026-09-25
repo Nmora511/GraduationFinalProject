@@ -20,9 +20,8 @@ namespace Enemies
         public float AttackDamage = 5f;
         public AttackHitbox DamageHitbox;
         public float HitAnimationDuration = 1.5f;
-        private Collider _attackCollider;
         private float _attackTimer;
-        private float _hitTimer;
+        private float _hitAnimationTimer;
         
         private float _originalStoppingDistance;
 
@@ -35,18 +34,17 @@ namespace Enemies
             base.Start();
             _originalStoppingDistance = navMeshAgent.stoppingDistance;
             DamageHitbox.Damage = AttackDamage;
-            _attackCollider = DamageHitbox.GetComponent<Collider>();
-            _attackCollider.enabled = false;
         }
 
-        private void Update()
+        protected override void Update()
         {
+            base.Update();
             if (Target is null) return;
 
             _distanceToPlayer = (Target.position - transform.position).magnitude;
         
             if (_attackTimer > 0f)  _attackTimer -= Time.deltaTime;
-            if (_hitTimer > 0f) _hitTimer -= Time.deltaTime;
+            if (_hitAnimationTimer > 0f) _hitAnimationTimer -= Time.deltaTime;
         
             switch (CurrentState)
             {
@@ -92,7 +90,6 @@ namespace Enemies
                         _attackTimer = AttackCooldown;
                         animator.SetBool(IsChasing, false);
                         animator.SetTrigger(HasAttacked);
-                        _attackCollider.enabled = true;
                     } 
                 
                     break;
@@ -123,21 +120,19 @@ namespace Enemies
                     else
                     {
                         CurrentState = EnemyState.Idle;
-                        _attackCollider.enabled  = false;
                     }
                     break;
 
                 case EnemyState.Hit:
                     navMeshAgent.isStopped = true;
                     
-                    if (_hitTimer <= 0f)
+                    if (_hitAnimationTimer <= 0f)
                     {
                         CurrentState = EnemyState.Idle;
                     }
                     break;
                 
                 case EnemyState.Dead:
-                    _attackCollider.enabled = false;
                     base.Death();
                     enabled = false;
                     break;
@@ -160,10 +155,10 @@ namespace Enemies
             return !Physics.Raycast(transform.position, directionToPlayer.normalized, distanceToPlayer, ObstacleLayer);
         }
 
-        public override void OnHit(float damage)
+        public override bool OnHit(float damage)
         {
-            base.OnHit(damage);
-            if (HealthPoints <= 0) return;
+            if (!(base.OnHit(damage))) return false;
+            if (HealthPoints <= 0) return false;
             
             CurrentState = EnemyState.Hit;
             animator.SetTrigger(WasHit);
@@ -171,7 +166,8 @@ namespace Enemies
             navMeshAgent.velocity = Vector3.zero;
             navMeshAgent.isStopped = true;
             
-            _hitTimer = HitAnimationDuration;
+            _hitAnimationTimer = HitAnimationDuration;
+            return true;
         }
 
         protected override void Death()

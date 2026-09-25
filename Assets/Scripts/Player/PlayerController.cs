@@ -45,7 +45,6 @@ namespace Player
 
         private bool _isAttacking = false;
         private float _attackCooldown = 1.2f;
-        private Collider _scytheCollider;
 
         private new void Start()
         {
@@ -55,8 +54,6 @@ namespace Player
             _animator = GetComponentInChildren<Animator>();
             
             ScytheHitbox.Damage = AttackDamage;
-            _scytheCollider = ScytheHitbox.GetComponent<Collider>();
-            _scytheCollider.enabled = false;
 
             //PlayerInput playerInput = GetComponent<PlayerInput>();
             //sprintAction = playerInput.actions["Sprint"];
@@ -153,7 +150,6 @@ namespace Player
         {
             if (_isAttacking) return;
             
-            _scytheCollider.enabled = true;
             _animator.SetTrigger(HasAttacked);
             _isAttacking = true;
         }
@@ -166,7 +162,6 @@ namespace Player
             
             if (_attackCooldown > 0f) return;
             
-            _scytheCollider.enabled = false;
             _isAttacking = false;
             _attackCooldown = AttackDuration;
         }
