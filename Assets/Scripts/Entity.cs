@@ -5,6 +5,10 @@ public abstract class Entity : MonoBehaviour
 {
     [Header("Combat Settings")]
     public float HealthPoints = 20f;
+    public float InvulnerabilityDuration = 1f;
+
+    private float _hitTimer;
+    private bool _isInvulnerable;
 
     private Renderer[] _entityRenderers;
     private bool _hitFlashIsExecuting = false;
@@ -14,18 +18,37 @@ public abstract class Entity : MonoBehaviour
         _entityRenderers = GetComponentsInChildren<Renderer>();
     }
 
-    public virtual void OnHit(float damage)
+    protected virtual void Update()
     {
+        if (_hitTimer > 0f)
+        {
+            _hitTimer -= Time.deltaTime;
+        }
+        else
+        {
+            _isInvulnerable = false;
+        }
+    }
+
+    public virtual bool OnHit(float damage)
+    {
+        if (_isInvulnerable) return false;
+
         if (!_hitFlashIsExecuting)
         {
             StartCoroutine(HitFlash());
         }
         
+        Debug.Log("Ai");
         HealthPoints -= damage;
         if (HealthPoints <= 0)
         {
             Death();
         }
+        
+        _isInvulnerable = true;
+        _hitTimer = InvulnerabilityDuration;
+        return true;
     }
 
     private IEnumerator HitFlash()
