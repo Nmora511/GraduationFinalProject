@@ -10,6 +10,8 @@ namespace Player
         private static readonly int Speed = Animator.StringToHash("speed");
         private static readonly int HasAttacked = Animator.StringToHash("hasAttacked");
 
+        public static Player PlayerInstance { get; private set; }
+
         [Header("Combat Settings")] 
         public float AttackDamage;
         public ScytheHitbox ScytheHitbox;
@@ -50,6 +52,17 @@ namespace Player
         private bool _isAttacking = false;
         private float _attackCooldown = 1.2f;
 
+        private void Awake()
+        {
+            if (PlayerInstance != null && PlayerInstance != this)
+            {
+                Destroy(gameObject);
+                return;
+            }
+        
+            PlayerInstance = this;
+        }
+        
         private new void Start()
         {
             base.Start();
