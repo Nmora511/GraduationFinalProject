@@ -61,9 +61,9 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Default
-      takeName: Default
-      internalID: -1568021386139247668
+      name: Stakes|Default
+      takeName: Stakes|Default
+      internalID: -7258220138384519535
       firstFrame: 0
       lastFrame: 1
       wrapMode: 0
