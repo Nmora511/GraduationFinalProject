@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using PlayerClass = Player.Player;
 
 namespace Enemies
 {
@@ -31,6 +32,11 @@ namespace Enemies
         
         private new void Start()
         {
+            if (Target == null)
+            {
+                Target = PlayerClass.PlayerInstance.transform;
+            }
+            
             base.Start();
             _originalStoppingDistance = navMeshAgent.stoppingDistance;
             DamageHitbox.Damage = AttackDamage;
