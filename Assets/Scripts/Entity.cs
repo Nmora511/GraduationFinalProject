@@ -6,6 +6,12 @@ public abstract class Entity : MonoBehaviour
     [Header("Combat Settings")]
     public float HealthPoints = 20f;
     public float InvulnerabilityDuration = 1f;
+    
+    [Header("Knockback Settings")]
+    public float KnockbackForce = 15f;
+    public float KnockbackFriction = 5f;
+    
+    protected Vector3 KnockbackVelocity;
 
     private float _hitTimer;
     private bool _isInvulnerable;
@@ -28,9 +34,10 @@ public abstract class Entity : MonoBehaviour
         {
             _isInvulnerable = false;
         }
+        UpdateKnockback();
     }
 
-    public virtual bool OnHit(float damage)
+    public virtual bool OnHit(float damage, Vector3 attackerPosition)
     {
         if (_isInvulnerable) return false;
 
@@ -39,7 +46,13 @@ public abstract class Entity : MonoBehaviour
             StartCoroutine(HitFlash());
         }
         
-        Debug.Log("Ai");
+        // Knockback handler
+        var pushDirection = (transform.position - attackerPosition).normalized;
+        pushDirection.y = 0f;
+        
+        KnockbackVelocity = pushDirection * KnockbackForce;
+        
+        //Damage Handler
         HealthPoints -= damage;
         if (HealthPoints <= 0)
         {
@@ -49,6 +62,11 @@ public abstract class Entity : MonoBehaviour
         _isInvulnerable = true;
         _hitTimer = InvulnerabilityDuration;
         return true;
+    }
+    
+    private void UpdateKnockback()
+    {
+        KnockbackVelocity = Vector3.Lerp(KnockbackVelocity, Vector3.zero, Time.deltaTime * KnockbackFriction);
     }
 
     private IEnumerator HitFlash()

@@ -69,8 +69,10 @@ namespace Player
             UpdateHorizontalVelocity();
             UpdateAttackStatus();
             ApplyGravity();
+            
+            var totalMovement = _finalVelocity + _verticalVelocity + KnockbackVelocity;
 
-            _controller.Move(_finalVelocity * Time.deltaTime);
+            _controller.Move(totalMovement * Time.deltaTime);
         }
 
         // Movement Handlers
@@ -98,7 +100,6 @@ namespace Player
             }
 
             _verticalVelocity.y += Gravity * Time.deltaTime;
-            _finalVelocity += _verticalVelocity;
         }
 
         private void UpdateHorizontalVelocity()

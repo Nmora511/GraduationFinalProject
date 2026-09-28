@@ -10,7 +10,7 @@ namespace Player
         private void OnTriggerEnter(Collider other)
         {
             if (!other.gameObject.CompareTag("Enemy")) return;
-            other.GetComponent<Enemy>().OnHit(Damage);
+            other.GetComponent<Enemy>().OnHit(Damage, transform.position);
         }
     }
 }

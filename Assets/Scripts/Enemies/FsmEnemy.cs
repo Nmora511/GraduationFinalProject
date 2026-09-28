@@ -126,6 +126,8 @@ namespace Enemies
                 case EnemyState.Hit:
                     navMeshAgent.isStopped = true;
                     
+                    navMeshAgent.Move(KnockbackVelocity * Time.deltaTime);
+                    
                     if (_hitAnimationTimer <= 0f)
                     {
                         CurrentState = EnemyState.Idle;
@@ -155,9 +157,9 @@ namespace Enemies
             return !Physics.Raycast(transform.position, directionToPlayer.normalized, distanceToPlayer, ObstacleLayer);
         }
 
-        public override bool OnHit(float damage)
+        public override bool OnHit(float damage, Vector3 attackerPosition)
         {
-            if (!(base.OnHit(damage))) return false;
+            if (!(base.OnHit(damage, attackerPosition))) return false;
             if (HealthPoints <= 0) return false;
             
             CurrentState = EnemyState.Hit;
