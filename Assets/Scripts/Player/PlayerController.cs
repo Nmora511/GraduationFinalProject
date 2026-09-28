@@ -51,7 +51,8 @@ namespace Player
 
         private bool _isAttacking = false;
         private float _attackCooldown = 1.2f;
-
+        private LayerMask _enemyMask;
+        
         private void Awake()
         {
             if (PlayerInstance != null && PlayerInstance != this)
@@ -69,6 +70,7 @@ namespace Player
             _controller = GetComponent<CharacterController>();
             _mainCamera = Camera.main;
             _animator = GetComponentInChildren<Animator>();
+            _enemyMask = LayerMask.GetMask("Enemy");
             
             ScytheHitbox.Damage = AttackDamage;
 
@@ -86,6 +88,7 @@ namespace Player
             var totalMovement = _finalVelocity + _verticalVelocity + KnockbackVelocity;
 
             _controller.Move(totalMovement * Time.deltaTime);
+            PushOutOfEnemies();
         }
 
         // Movement Handlers
@@ -190,6 +193,28 @@ namespace Player
             
             _isAttacking = false;
             _attackCooldown = AttackDuration;
+        }
+        
+        private void PushOutOfEnemies()
+        {
+            var overlaps = new Collider[25];            
+            
+            var count = Physics.OverlapSphereNonAlloc(
+                transform.position, 2f, overlaps, _enemyMask);
+
+            for (var i = 0; i < count; i++)
+            {
+                var col = overlaps[i];
+                if (col == _controller) continue;
+
+                if (!Physics.ComputePenetration(
+                        _controller, transform.position, transform.rotation,
+                        col, col.transform.position, col.transform.rotation,
+                        out var dir, out var dist)) continue;
+                dir.y = 0f;
+                if (dir.sqrMagnitude < 0.0001f) continue;
+                _controller.Move(dir.normalized * dist);
+            }
         }
     }
 }
