@@ -90,7 +90,7 @@ namespace Enemies
                         navMeshAgent.stoppingDistance = 0f;
                         CurrentState = EnemyState.Investigating;
                     }
-                    else if (_distanceToPlayer <= ProximityRadius && _attackTimer <= 0f && angleToPlayer <= 25f)
+                    else if (_distanceToPlayer <= ProximityRadius && _attackTimer <= 0f && angleToPlayer <= 15f)
                     {
                         CurrentState = EnemyState.Attacking;
                         _attackTimer = AttackCooldown;

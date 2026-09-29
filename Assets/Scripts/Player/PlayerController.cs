@@ -1,6 +1,10 @@
 using System.Collections;
+using Unity.VectorGraphics;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Rendering;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 // TODO: Attack and Animations (All code is commented)
 namespace Player
@@ -9,6 +13,9 @@ namespace Player
     {
         private static readonly int Speed = Animator.StringToHash("speed");
         private static readonly int HasAttacked = Animator.StringToHash("hasAttacked");
+        private static readonly int HasDashed = Animator.StringToHash("hasDashed");
+        private static readonly int HasDied = Animator.StringToHash("hasDied");
+
 
         public static Player PlayerInstance { get; private set; }
 
@@ -29,12 +36,17 @@ namespace Player
         
         [Header("Gravity Settings")]
         public float Gravity = -15f;
+        
+        [Header("UI Settings")]
+        public GameObject GameOverPanel;
+        public Slider HealthSlider;
+        public Slider DashSlider;
+        
         private Vector3 _verticalVelocity;
 
         private Camera _mainCamera;
     
         private CharacterController _controller;
-        //private Animator animator;
 
         private Renderer _playerRenderer;
         
@@ -73,7 +85,11 @@ namespace Player
             _enemyMask = LayerMask.GetMask("Enemy");
             
             ScytheHitbox.Damage = AttackDamage;
-
+            
+            HealthSlider.maxValue = HealthPoints;
+            DashSlider.maxValue = DashCooldown;
+            UpdateSliders();
+            
             //PlayerInput playerInput = GetComponent<PlayerInput>();
             //sprintAction = playerInput.actions["Sprint"];
         }
@@ -89,6 +105,7 @@ namespace Player
 
             _controller.Move(totalMovement * Time.deltaTime);
             PushOutOfEnemies();
+            UpdateSliders();
         }
 
         // Movement Handlers
@@ -105,6 +122,7 @@ namespace Player
                 _isDashing = true;
                 _dashTimer = DashDuration;
                 _dashCooldownTimer = DashCooldown;
+                _animator.SetTrigger(HasDashed);
             }
         }
         
@@ -172,6 +190,28 @@ namespace Player
             _finalVelocity = _inputDirection * currentSpeed;
             //animator.SetFloat("Speed", currentSpeed);
         }
+        
+        private void PushOutOfEnemies()
+        {
+            var overlaps = new Collider[25];            
+            
+            var count = Physics.OverlapSphereNonAlloc(
+                transform.position, 2f, overlaps, _enemyMask);
+
+            for (var i = 0; i < count; i++)
+            {
+                var col = overlaps[i];
+                if (col == _controller) continue;
+
+                if (!Physics.ComputePenetration(
+                        _controller, transform.position, transform.rotation,
+                        col, col.transform.position, col.transform.rotation,
+                        out var dir, out var dist)) continue;
+                dir.y = 0f;
+                if (dir.sqrMagnitude < 0.0001f) continue;
+                _controller.Move(dir.normalized * dist);
+            }
+        }
 
         // Combat Handlers
         
@@ -194,27 +234,31 @@ namespace Player
             _isAttacking = false;
             _attackCooldown = AttackDuration;
         }
-        
-        private void PushOutOfEnemies()
+
+        protected override void Death()
         {
-            var overlaps = new Collider[25];            
-            
-            var count = Physics.OverlapSphereNonAlloc(
-                transform.position, 2f, overlaps, _enemyMask);
+            _animator.SetTrigger(HasDied);
+            StartCoroutine(DelayedGameOver());
+            enabled = false;   
+        }
 
-            for (var i = 0; i < count; i++)
-            {
-                var col = overlaps[i];
-                if (col == _controller) continue;
+        private IEnumerator DelayedGameOver()
+        {
+            yield return new WaitForSeconds(2f);
+            GameOverPanel.SetActive(true);        
+        }
 
-                if (!Physics.ComputePenetration(
-                        _controller, transform.position, transform.rotation,
-                        col, col.transform.position, col.transform.rotation,
-                        out var dir, out var dist)) continue;
-                dir.y = 0f;
-                if (dir.sqrMagnitude < 0.0001f) continue;
-                _controller.Move(dir.normalized * dist);
-            }
+        public void RestartGame()
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        }
+        
+        // UI Handlers
+
+        private void UpdateSliders()
+        {
+            HealthSlider.value = HealthPoints;
+            DashSlider.value = DashCooldown - _dashCooldownTimer;
         }
     }
 }
