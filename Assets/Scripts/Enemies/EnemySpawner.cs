@@ -1,4 +1,5 @@
 using UnityEngine;
+using PlayerClass = Player.Player;
 
 namespace Enemies
 {
@@ -18,7 +19,20 @@ namespace Enemies
             
             if (_spawnTimer <= 0)
             {
-                var unitInstance = Instantiate(EnemyPrefab, transform.position, Quaternion.identity);
+                var spawnRotation = Quaternion.identity;
+                
+                if (PlayerClass.PlayerInstance is not null)
+                {
+                    var directionToPlayer = PlayerClass.PlayerInstance.transform.position - transform.position;
+                    directionToPlayer.y = 0f;
+                    
+                    if (directionToPlayer.sqrMagnitude > 0.001f)
+                    {
+                        spawnRotation = Quaternion.LookRotation(directionToPlayer.normalized);
+                    }
+                }
+                
+                var unitInstance = Instantiate(EnemyPrefab, transform.position, spawnRotation);
                 _currentEnemyInstance = unitInstance.GetComponent<Enemy>();
                 _spawnTimer = SpawnInterval;
                 _enemiesQuantity++;

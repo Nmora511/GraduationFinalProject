@@ -21,7 +21,7 @@ namespace Grid
 
         public UnitType CurrentUnitType;
         
-        [Header("Configuração dos Prefabs (Arraste aqui)")]
+        [Header("Prefabs Configuration")]
         [SerializeField] private List<UnitMapping> unitMappings;
         
         private static readonly Dictionary<UnitType, GameObject> UnitTypeToPrefab = new();

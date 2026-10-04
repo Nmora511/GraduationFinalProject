@@ -237,6 +237,7 @@ namespace Player
 
         protected override void Death()
         {
+            UpdateSliders();
             _animator.SetTrigger(HasDied);
             StartCoroutine(DelayedGameOver());
             enabled = false;   
